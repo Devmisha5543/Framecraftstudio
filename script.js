@@ -26,9 +26,8 @@ requiredFields.forEach(id => {
   if (field) field.addEventListener('change', checkForm);
 });
 
-// ── Telegram bot integration ──
-const TELEGRAM_TOKEN = '8773179252:AAE0BJ1VfFa8rQAVwI8mePJyePU6st9v2rw';
-const CHAT_ID = '807045593';
+// ── Contact form — sends through Cloudflare Worker ──
+const WORKER_URL = 'https://framecraft-bot.wamisha-sahilu.workers.dev';
 
 const form = document.getElementById('contact-form');
 form.addEventListener('submit', async (e) => {
@@ -40,27 +39,19 @@ form.addEventListener('submit', async (e) => {
   const service = document.getElementById('service').value;
   const message = document.getElementById('message').value;
 
-  const text = `
-🔔 New enquiry from FrameCraft Studio!
-
-👤 Name: ${name}
-📧 Email: ${email}
-📱 Phone: ${phone}
-🎨 Service: ${service}
-💬 Message: ${message}
-  `;
+  submitBtn.textContent = 'Sending...';
+  submitBtn.disabled = true;
 
   try {
-    const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+    const response = await fetch(WORKER_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        chat_id: CHAT_ID,
-        text: text
-      })
+      body: JSON.stringify({ name, email, phone, service, message })
     });
 
-    if (response.ok) {
+    const data = await response.json();
+
+    if (data.success) {
       form.innerHTML = `
         <div style="
           padding: 2rem;
@@ -74,9 +65,13 @@ form.addEventListener('submit', async (e) => {
         </div>
       `;
     } else {
+      submitBtn.textContent = 'Send Message';
+      submitBtn.disabled = false;
       alert('Something went wrong. Please try again.');
     }
   } catch (error) {
+    submitBtn.textContent = 'Send Message';
+    submitBtn.disabled = false;
     alert('Network error. Please check your connection and try again.');
   }
 });
