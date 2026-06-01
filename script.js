@@ -34,10 +34,11 @@ form.addEventListener('submit', async (e) => {
   e.preventDefault();
 
   const name = document.getElementById('name').value;
-  const email = document.getElementById('email').value;
-  const phone = document.getElementById('phone').value;
-  const service = document.getElementById('service').value;
-  const message = document.getElementById('message').value;
+const email = document.getElementById('email').value;
+const phone = document.getElementById('phone').value;
+const service = document.getElementById('service').value;
+const message = document.getElementById('message').value;
+const honeypot = document.getElementById('honeypot').value;
 
   submitBtn.textContent = 'Sending...';
   submitBtn.disabled = true;
@@ -46,7 +47,7 @@ form.addEventListener('submit', async (e) => {
     const response = await fetch(WORKER_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, phone, service, message })
+      body: JSON.stringify({ name, email, phone, service, message, honeypot })
     });
 
     const data = await response.json();
@@ -75,3 +76,14 @@ form.addEventListener('submit', async (e) => {
     alert('Network error. Please check your connection and try again.');
   }
 });
+
+// ── Scroll fade-up animations ──
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.15 });
+
+document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
