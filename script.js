@@ -1,3 +1,14 @@
+// ── Page Loader ──
+window.addEventListener('load', () => {
+  const loader = document.getElementById('page-loader');
+  setTimeout(() => {
+    loader.classList.add('hidden');
+    setTimeout(() => {
+      loader.style.display = 'none';
+    }, 800);
+  }, 2200);
+});
+
 // ── Navbar scroll effect ──
 window.addEventListener('scroll', () => {
   const navbar = document.getElementById('navbar');
